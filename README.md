@@ -1,2 +1,42 @@
 # jupyter_anywidget_pandoc
-Jupyter anywidget sideloading pandoc wasm
+
+Example Jupyter anywidget that will sideload [`georgestagg/pandoc-wasm`](https://github.com/georgestagg/pandoc-wasm) into the browser and support pandoc conversions using it.
+
+For example:
+
+```python
+from jupyter_anywidget_pandoc import pandoc_headless
+
+# Load the headless widget
+p = pandoc_headless()
+
+# Wait for pandoc wasm to load (blocking;; does not work in JupyterLite)
+p.ready()
+
+# Try a conversion
+# This is blocking - does not work in JupyerLite
+output = p.convert("## Some markdown\nWith *feeling...*")
+output
+> '<h2 id="some-markdown">Some markdown</h2>\n<p>With <em>feeling…</em></p>'
+
+#Non-blocking
+p.base_convert("## Some markdown\nWith *feeling...*")
+# When it's ready, collect from:
+p.response
+> {'status': 'processing'}
+> {'status': 'completed', 'output_raw': '<p>Another example</p>'}
+```
+
+## Installation
+
+```sh
+pip install jupyter_anywidget_pandoc
+```
+
+or with [uv](https://github.com/astral-sh/uv):
+
+```sh
+uv add jupyter_anywidget_pandoc
+```
+
+Open `example.ipynb` in JupyterLab, VS Code, for a demo...

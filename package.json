@@ -1,0 +1,12 @@
+{
+	"scripts": {
+		"dev": "npm run build -- --sourcemap=inline --watch",
+		"build": "esbuild js/*.js --minify --format=esm --bundle --outdir=src/jupyter_anywidget_pandoc/static --loader:.html=text"
+	},
+	"dependencies": {
+		"pandoc-wasm": "^0.0.2"
+	},
+	"devDependencies": {
+		"esbuild": "^0.24.0"
+	}
+}
