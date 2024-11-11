@@ -17,7 +17,7 @@ try:
     from jupyter_ui_poll import ui_events
 except:
     warnings.warn(
-        "You must install jupyter_ui_poll if you want to return cell responses / blocking waits (not JupyerLite); install necessary packages then restart the notebook kernel:%pip install jupyter_ui_poll",
+        "You must install jupyter_ui_poll if you want to return cell responses / blocking waits (not JupyterLite); install necessary packages then restart the notebook kernel:%pip install jupyter_ui_poll",
         UserWarning,
     )
 

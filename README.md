@@ -14,7 +14,7 @@ p = pandoc_headless()
 p.ready()
 
 # Try a conversion
-# This is blocking - does not work in JupyerLite
+# This is blocking - does not work in JupyterLite
 output = p.convert("## Some markdown\nWith *feeling...*")
 output
 > '<h2 id="some-markdown">Some markdown</h2>\n<p>With <em>feeling…</em></p>'
