@@ -27,6 +27,8 @@ p.response
 > {'status': 'completed', 'output_raw': '<p>Another example</p>'}
 ```
 
+Use `p.convert_from_file(path, output_format="markdown", timeout=3)` etc. to load from a local file path or a URL. If no `input_format=` is specified, the function will attempt to identify the input file type from a file suffix in the path.
+
 ## Installation
 
 ```sh

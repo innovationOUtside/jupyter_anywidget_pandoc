@@ -1,6 +1,6 @@
 import importlib.metadata
-import pathlib
-
+from pathlib import Path
+import requests
 import anywidget
 import traitlets
 import time
@@ -21,15 +21,16 @@ except:
         UserWarning,
     )
 
+
 class Widget(anywidget.AnyWidget):
-    _esm = pathlib.Path(__file__).parent / "static" / "widget.js"
-    _css = pathlib.Path(__file__).parent / "static" / "widget.css"
+    _esm = Path(__file__).parent / "static" / "widget.js"
+    _css = Path(__file__).parent / "static" / "widget.css"
     value = traitlets.Int(0).tag(sync=True)
 
 
 class pandocWidget(anywidget.AnyWidget):
-    _esm = pathlib.Path(__file__).parent / "static" / "pandoc.js"
-    _css = pathlib.Path(__file__).parent / "static" / "pandoc.css"
+    _esm = Path(__file__).parent / "static" / "pandoc.js"
+    _css = Path(__file__).parent / "static" / "pandoc.css"
 
     headless = traitlets.Bool(False).tag(sync=True)
     doc_content = traitlets.Unicode("").tag(sync=True)
@@ -80,10 +81,46 @@ class pandocWidget(anywidget.AnyWidget):
         self.set_output_format(output_format)
         self.set_doc_content(input_text)
 
-    def convert(self, input_text, input_format="markdown", output_format="html", timeout=None):
+    def convert(
+        self, input_text, input_format="markdown", output_format="html", timeout=None
+    ):
         self.base_convert(input_text, input_format, output_format)
         self.blocking_reply(timeout)
         return self.output_raw
+
+    def convert_from_file(
+        self, path, input_format=None, output_format="html", timeout=None
+    ):
+        if path.startswith("http"):
+            # Download the content from the URL
+            response = requests.get(path)
+            if response.status_code == 200:
+                input_text = response.text
+                # Attempt to extract file type from URL, if possible
+                filetype = path.split(".")[-1] if "." in path else "unknown"
+            else:
+                raise Exception(
+                    f"Failed to fetch the URL. Status code: {response.status_code}"
+                )
+        else:
+            # Check if the file exists
+            file_path = Path(path)
+            if file_path.exists() and file_path.is_file():
+                # Read the content of the file
+                input_text = file_path.read_text()
+                # Get the file type (suffix)
+                filetype = file_path.suffix
+            else:
+                raise FileNotFoundError(f"The file '{path}' does not exist.")
+
+        if not input_format:
+            # Clean the filetype
+            filetype = filetype.lstrip(".")
+            # Repair
+            repair_map = {"html=": "html", "md": "markdown"}
+            input_format = repair_map.get(filetype, filetype)
+
+        return self.convert(input_text, input_format, output_format, timeout)
 
 
 def pandoc_headless():
@@ -100,10 +137,13 @@ def pandoc_inline():
 
 from .magics import PandocAnywidgetMagic
 
+
 def load_ipython_extension(ipython):
     ipython.register_magics(PandocAnywidgetMagic)
 
+
 from .panel import create_panel
+
 
 # Launch with custom title as: pandoc_panel("Pandoc")
 # Use second parameter for anchor
