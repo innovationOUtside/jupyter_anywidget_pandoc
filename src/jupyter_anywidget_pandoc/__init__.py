@@ -1,6 +1,9 @@
 import importlib.metadata
 from pathlib import Path
-import requests
+try:
+    import requests
+except:
+    pass
 import anywidget
 import traitlets
 import time
@@ -47,14 +50,20 @@ class pandocWidget(anywidget.AnyWidget):
 
     def _wait(self, timeout, conditions=("status", "completed")):
         start_time = time.time()
-        with ui_events() as ui_poll:
-            while self.response[conditions[0]] != conditions[1]:
-                ui_poll(10)
-                if timeout and ((time.time() - start_time) > timeout):
-                    raise TimeoutError(
-                        "Action not completed within the specified timeout."
-                    )
-                time.sleep(0.1)
+        try:
+            with ui_events() as ui_poll:
+                while self.response[conditions[0]] != conditions[1]:
+                    ui_poll(10)
+                    if timeout and ((time.time() - start_time) > timeout):
+                        raise TimeoutError(
+                            "Action not completed within the specified timeout."
+                        )
+                    time.sleep(0.1)
+        except:
+            warnings.warn(
+                "jupyter_ui_poll not available (if you are in JupyterLite, this is to be expected...)",
+                UserWarning,
+            )
         self.response["time"] = time.time() - start_time
         return
 
