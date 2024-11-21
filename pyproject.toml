@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "jupyter_anywidget_pandoc"
-version = "0.0.4"
+version = "0.0.5"
 description = "Jupyter anywidget for sideloading pandoc wasm"
-dependencies = ["anywidget", "sidecar"]
+dependencies = ["anywidget"]
 readme = "README.md"
 authors = [
     { name = "Tony Hirst", email = "tony.hirst@gmail.com" }
